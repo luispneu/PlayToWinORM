@@ -60,26 +60,28 @@ app.get("/usuarios", async (req, res) => {
 })
 
 app.get("/usuarios/:id/atualizar", async (req, res) => {
+  
+  const id = req.params.id
+  const usuario = await Usuario.findByPk(id, { raw: true })
+  res.render("formUsuario", { usuario });
+})
+
+app.post("/usuarios/:id/atualizar", async (req, res) => {
+  const id = req.params.id
+
   const dadosUsuario = {
     nickname: req.body.nickname,
     nome: req.body.nome
   }
   
-
-app.post("/usuarios/:id/atualizar", async (req, res) => {
-  const id = req.params.id
-  const usuario = await Usuario.findByPk(id, { raw: true })
-  res.render("formUsuario", { usuario });
   const registrosAfetados = await Usuario.update(dadosUsuario, { where: {id: id}}) 
+  if (registrosAfetados > 0) {
+    res.redirect("/usuarios");
+    
+  } else{
+    res.send("Erro ao atualizar usuário!")
+  }
 })
-})
-
-if (registrosAfetados > 0) {
-  res.redirect("/usuarios");
-
-} else{
-  res.send("Erro ao atualizar usuário!")
-}
 
 
 app.listen(8000, () => {
