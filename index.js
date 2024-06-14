@@ -36,8 +36,8 @@ app.post("/usuario/novo", async (req, res) => {
     nickname: req.body.nickname,
     nome: req.body.nome
   }
-
-  const usuario = await Usuario.create(dadosUsuario);
+  
+   await Usuario.create(dadosUsuario);
   res.send("Usuario cadastrado com id" + usuario.id);
 });
 
@@ -60,23 +60,29 @@ app.get("/usuarios", async (req, res) => {
 })
 
 app.get("/usuarios/:id/atualizar", async (req, res) => {
+  const dadosUsuario = {
+    nickname: req.body.nickname,
+    nome: req.body.nome
+  }
+  
+
+app.post("/usuarios/:id/atualizar", async (req, res) => {
   const id = req.params.id
   const usuario = await Usuario.findByPk(id, { raw: true })
   res.render("formUsuario", { usuario });
+  const registrosAfetados = await Usuario.update(dadosUsuario, { where: {id: id}}) 
+})
 })
 
-// Inicialização do servidor
+if (registrosAfetados > 0) {
+  res.redirect("/usuarios");
+
+} else{
+  res.send("Erro ao atualizar usuário!")
+}
+
+
 app.listen(8000, () => {
-  console.log("Abridu!");
+  console.log("Abriduh!");
   console.log("http://localhost:8000/")
 });
-
-// Conexão com o banco de dados
-conn
-  .sync()
-  .then(() => {
-    console.log("Conectado ao banco de dados com sucesso!");
-  })
-  .catch((err) => {
-    console.log("Ocorreu um erro: " + err);
-  });
